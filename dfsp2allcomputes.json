@@ -1,0 +1,12 @@
+// dfsp2allcomputes
+// Click the "Run query" command above to execute the query and see results.
+securityresources
+| where type == "microsoft.security/pricings"
+| where name == "VirtualMachines"
+| extend Defenderplan= split(properties, ",")[2]
+| where Defenderplan contains 'P2'
+| join resources on subscriptionId
+| where type1 == 'microsoft.compute/virtualmachines/extensions' or type1 == 'microsoft.hybridcompute/machines/extensions' or type1 == 'microsoft.compute/virtualmachinescalesets/machines/extensions' 
+| where name1 contains 'MDE'
+| project hostname = tostring(split(id1, "/")[8]), Defenderplan, name1, type1
+| count //remove to see details
